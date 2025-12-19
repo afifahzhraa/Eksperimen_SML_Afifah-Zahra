@@ -1,0 +1,39 @@
+name: Preprocessing Workflow
+
+on:
+  push:
+    branches: ["main"]
+
+
+permissions:
+  contents: write 
+
+jobs:
+  preprocessing:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Python 3.12.7
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12.7"
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install pandas scikit-learn joblib
+
+    - name: Run preprocessing
+      run: |
+        python preprocessing/automate_Afifah-Zahra.py
+
+    - name: Commit & Push results
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add preprocessing/diabetes_preprocessing/*.csv
+        git commit -m "Update preprocessed dataset [skip ci]" || echo "No changes to commit"
+        git push origin main
